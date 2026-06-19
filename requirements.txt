@@ -1,0 +1,13 @@
+# ==============================================================================
+# Dependencias del Proyecto - StreamUCV
+# Instalar con: pip install -r requirements.txt
+# ==============================================================================
+
+# Framework de Interfaz Gráfica
+streamlit>=1.30.0
+
+# Conector ODBC para SQL Server
+pyodbc>=5.0.0
+
+# Procesamiento de Datos y Tablas
+pandas>=2.0.0

@@ -1,0 +1,49 @@
+# ==============================================================================
+# Git Ignore - Proyecto #1 StreamUCV (Administración de Bases de Datos)
+# ==============================================================================
+
+# Entornos Virtuales de Python
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Caché de Python
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Configuración de Streamlit y Credenciales Sensibles
+# NOTA: Ignoramos secrets.toml porque allí se guardan contraseñas locales de la BD
+.streamlit/secrets.toml
+.streamlit/history
+
+# Archivos de Entorno / Variables Sensibles
+.env
+.env.local
+.env.*
+
+# Logs y Archivos Temporales de Base de Datos
+*.log
+*.sqlite
+*.sql.bak
+*.sql.tmp
+
+# Configuraciones de Editores / IDEs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Archivos del Sistema Operativo
+Thumbs.db
+desktop.ini
+.DS_Store
