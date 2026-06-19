@@ -28,6 +28,9 @@ venv.bak/
 .env.local
 .env.*
 
+# Configuración de conexión a BD (contiene credenciales)
+app/config.py
+
 # Logs y Archivos Temporales de Base de Datos
 *.log
 *.sqlite
