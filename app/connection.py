@@ -48,4 +48,4 @@ def get_connection(server=None, database=None, username=None, password=None, dri
     if "18" in drv:
         conn_str += "Encrypt=yes;TrustServerCertificate=yes;"
         
-    return pyodbc.connect(conn_str)
+    return pyodbc.connect(conn_str, timeout=10)
