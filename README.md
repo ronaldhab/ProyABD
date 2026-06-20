@@ -19,6 +19,11 @@ Instale las librerías necesarias con el siguiente comando en su terminal:
 pip install -r requirements.txt
 ```
 
+### 3. Configuracion de la BD
+```bash
+python3 setup_db.py
+```
+
 ---
 
 ## 🚀 Instrucciones de Ejecución

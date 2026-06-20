@@ -1,14 +1,10 @@
-import os
-import sys
+# main.py - Versión simplificada
+import streamlit as st
 
-# Asegurar que el directorio raíz está en el path de búsqueda de Python
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+# Tu código de la aplicación aquí
+st.set_page_config(page_title="StreamUCV", layout="wide")
+st.title("StreamUCV - Aplicación")
 
-if __name__ == "__main__":
-    try:
-        import streamlit.web.cli as stcli
-        sys.argv = ["streamlit", "run", os.path.join(os.path.dirname(__file__), "app", "ui", "streamlit_app.py")]
-        sys.exit(stcli.main())
-    except ImportError:
-        print("Streamlit no está instalado o no se puede importar directamente.")
-        print("Por favor ejecute la aplicación usando: streamlit run app/ui/streamlit_app.py")
+# Importa y ejecuta tu app principal
+from app.ui.streamlit_app import main
+main()
