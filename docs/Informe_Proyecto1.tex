@@ -1,0 +1,402 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{longtable}
+
+% Configuracion del estilo de hipervinculos
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={StreamUCV - Informe Tecnico de la Solucion},
+    pdfpagemode=FullScreen,
+}
+
+% Configuracion del formato de codigo (Listings)
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.96,0.96,0.94}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+% Configuracion de encabezados y pies de pagina
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Administracion de Bases de Datos}
+\lhead{StreamUCV --- Proyecto \#1}
+\rfoot{Pagina \thepage}
+\lfoot{Escuela de Computacion, UCV}
+
+\begin{document}
+
+% ==============================================================================
+% PORTADA
+% ==============================================================================
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    {\large \textbf{UNIVERSIDAD CENTRAL DE VENEZUELA}}\\[0.2cm]
+    {\large \textbf{FACULTAD DE CIENCIAS}}\\[0.2cm]
+    {\large \textbf{ESCUELA DE COMPUTACION}}\\[0.2cm]
+    {\large \textbf{ADMINISTRACION DE BASES DE DATOS}}\\[1.5cm]
+    
+    \vspace{4cm}
+    
+    {\Large \textbf{PROYECTO \#1 --- STREAMUCV}}\\[0.4cm]
+    {\Large \textbf{INFORME TECNICO DE LA SOLUCION}}\\[2.5cm]
+    
+    \vspace{4cm}
+
+    \begin{minipage}{0.4\textwidth}
+        \begin{flushleft} \large
+            \emph{Grupo Docente:}\\
+            Br. Joiner Rojas\\
+            Br. Maximiliano Barboza
+        \end{flushleft}
+    \end{minipage}
+    ~
+    \begin{minipage}{0.4\textwidth}
+        \begin{flushright} \large
+            \emph{Integrantes:}\\
+            Ronald Herrera\\
+            Brhandon Palomo\\
+            Sebástian Russian\\
+        \end{flushright}
+    \end{minipage}\\[5cm]
+    
+    \vfill
+    {\large Caracas, Junio de 2026}
+\end{titlepage}
+
+\newpage
+\tableofcontents
+\newpage
+
+% ==============================================================================
+% SECCION 1: DESCRIPCION GENERAL DE LA SOLUCION
+% ==============================================================================
+\section{Descripcion General de la Solucion del Proyecto}
+El proyecto \textbf{StreamUCV} es una solucion modular e interactiva orientada a resolver un problema critico del departamento de Analisis de Datos de la empresa: la falta de visibilidad estructurada sobre su base de datos alojada en \textbf{Microsoft SQL Server 2022}. Para ello, se ha disenado y desarrollado una aplicacion en \textbf{Python} utilizando el framework web \textbf{Streamlit}. Esta aplicacion interroga en tiempo real el \textbf{Diccionario de Datos (D/D)} de la instancia y presenta un reporte estructurado y visual de la metadata del sistema.
+
+\subsection{Arquitectura de la Solucion}
+La solucion se compone de varias capas bien diferenciadas, respetando el principio de separacion de responsabilidades:
+\begin{itemize}
+    \item \textbf{Capa de Punto de Entrada (\texttt{main.py})}: Es el archivo que sirve como iniciador simplificado de la aplicacion. Configura la pagina de Streamlit y cede el control a la interfaz grafica.
+    \item \textbf{Capa de Configuracion (\texttt{app/config.py})}: Centraliza todas las variables globales del sistema requeridas por el enunciado, incluyendo la cadena de conexion por defecto (\texttt{SERVER}, \texttt{DATABASE}, \texttt{USERNAME}, \texttt{PASSWORD}, \texttt{DRIVER}) y los parametros de computo fisico (tamano de la pagina de datos a 8192 bytes y la velocidad de transferencia del disco a 17 MB/s).
+    \item \textbf{Capa de Conexion (\texttt{app/connection.py})}: Utiliza la biblioteca \texttt{pyodbc} para gestionar de manera segura la apertura y el cierre de conexiones a SQL Server. Soporta de forma dinamica tanto la autenticacion nativa de SQL Server (usuario/contrasena) como la autenticacion integrada de Windows (\texttt{Trusted\_Connection=yes}), e incluye la gestion del cifrado SSL (\texttt{Encrypt=yes}) para drivers modernos.
+    \item \textbf{Capa de Consulta al Diccionario de Datos (\texttt{app/queries/})}: Contiene 10 modulos independientes en Python (del \texttt{r01\_tablas\_indices.py} al \texttt{r10\_costo\_consulta.py}). Cada script implementa de forma aislada las consultas SQL especializadas sobre las tablas del sistema de SQL Server y los calculos asociados. Los resultados se procesan como objetos \texttt{pandas.DataFrame}.
+    \item \textbf{Capa de Interfaz de Usuario (\texttt{app/ui/streamlit\_app.py})}: Implementa el panel de control web. Dispone de una barra lateral interactiva para modificar en caliente los parametros de conexion, garantizando una excelente portabilidad. Asimismo, divide los 10 requerimientos del sistema en pestanas y controles interactivos que facilitan la navegacion de los analistas de datos.
+\end{itemize}
+
+\subsection{Beneficios del Diseno}
+\begin{enumerate}
+    \item \textbf{Portabilidad Absoluta}: La base de datos y la cadena de conexion no estan codificadas de forma rigida en multiples puntos del programa. Se definen en \texttt{config.py} y se pueden sobrescribir dinamicamente desde la barra lateral de la interfaz. Esto asegura que la aplicacion pueda ejecutarse en cualquier equipo sin modificar el codigo fuente.
+    \item \textbf{Eficiencia en la Consulta}: La aplicacion no lee datos de usuario directamente para calcular estadisticas fisicas; en su lugar, accede a las vistas del sistema catalogadas de SQL Server, lo que minimiza la carga de trabajo sobre el motor relacional.
+    \item \textbf{Interactividad Avanzada}: En lugar de requerir que los analistas ejecuten sentencias SQL complejas manualmente, la aplicacion provee botones, tablas dinamicas interactivos y selectores que estiman los costos fisicos de forma automatizada.
+\end{enumerate}
+
+\newpage
+
+% ==============================================================================
+% SECCION 2: EXPLICACION DEL USO DEL DICCIONARIO DE DATOS
+% ==============================================================================
+\section{Explicacion del Uso del Diccionario de Datos}
+El Diccionario de Datos (D/D) o catalogo de base de datos es una coleccion de tablas internas y vistas de solo lectura que almacenan los metadatos del motor SQL Server (es decir, datos sobre la estructura fisica y logica de la base de datos). 
+
+En lugar de consultar tablas de usuario, esta solucion interroga las vistas de catalogo internas en el esquema \texttt{sys}. A continuacion se explica detalladamente la logica, las tablas de sistema utilizadas y los supuestos de calculo matematico implementados para cada uno de los 10 requerimientos funcionales del proyecto.
+
+\subsection{R1: Listado de Tablas e Indices del Esquema Streaming}
+El objetivo es obtener una lista detallada de todas las tablas e indices definidos en el esquema \texttt{streaming}.
+\begin{itemize}
+    \item \textbf{Tablas del sistema utilizadas}: 
+        \begin{itemize}
+            \item \texttt{sys.tables} (t): Contiene una fila por cada objeto de tabla en la base de datos.
+            \item \texttt{sys.schemas} (s): Almacena informacion sobre los esquemas. Permite filtrar para obtener unicamente las tablas del esquema \texttt{streaming}.
+            \item \texttt{sys.indexes} (i): Contiene una fila por cada indice de cada tabla.
+        \end{itemize}
+    \item \textbf{Logica SQL}: 
+        Para obtener las tablas, se une \texttt{sys.tables} con \texttt{sys.schemas} bajo la condicion \texttt{s.name = 'streaming'}. Para los indices, se anade una junta con \texttt{sys.indexes} filtrando \texttt{i.name IS NOT NULL} (evitando asi la fila por defecto con \texttt{index\_id = 0} que representa la tabla organizada en monton o Heap).
+\end{itemize}
+
+\subsection{R2: Conteo Total de Tablas y Cantidad de Indices por Tabla}
+Este requerimiento indica el volumen total de la base de datos en terminos de estructuras logicas.
+\begin{itemize}
+    \item \textbf{Tablas del sistema utilizadas}: \texttt{sys.tables}, \texttt{sys.schemas} y \texttt{sys.indexes}.
+    \item \textbf{Logica SQL}:
+        Se realiza un conteo escalar de tablas en el esquema \texttt{streaming}. A su vez, para el desglose por tabla, se ejecuta un \texttt{LEFT JOIN} entre \texttt{sys.tables} y \texttt{sys.indexes} agrupando por \texttt{t.name}, contando los identificadores de indice validos.
+\end{itemize}
+
+\subsection{R3: Restricciones Existentes en el Esquema}
+Permite auditar las reglas de integridad fisica declaradas en el modelo relacional.
+\begin{itemize}
+    \item \textbf{Tablas del sistema utilizadas}: 
+        \begin{itemize}
+            \item \texttt{sys.objects} (c): Almacena metadatos de todos los objetos de la base de datos.
+            \item \texttt{sys.tables} (t) y \texttt{sys.schemas} (s).
+        \end{itemize}
+    \item \textbf{Clasificacion de Restricciones}:
+        Se filtran los objetos en \texttt{sys.objects} segun su propiedad \texttt{c.type}:
+        \begin{table}[h!]
+            \centering
+            \begin{tabular}{ll}
+                \toprule
+                \textbf{Codigo de Tipo} & \textbf{Descripcion de Restriccion} \\
+                \midrule
+                \texttt{PK} & Clave Primaria (Primary Key) \\
+                \texttt{F}  & Clave Foranea (Foreign Key) \\
+                \texttt{C}  & Restriccion de Verificacion (Check Constraint) \\
+                \texttt{UQ} & Restriccion de Unicidad (Unique) \\
+                \texttt{D}  & Valor por Defecto (Default Constraint) \\
+                \bottomrule
+            \end{tabular}
+            \caption{Mapeo de restricciones en \texttt{sys.objects}.}
+        \end{table}
+        Se une con la tabla padre mediante la relacion \texttt{c.parent\_object\_id = t.object\_id}.
+\end{itemize}
+
+\subsection{R4: Columnas que Conforman cada Indice}
+Muestra de forma compacta que atributos del modelo logico componen la clave de busqueda de cada indice configurado.
+\begin{itemize}
+    \item \textbf{Tablas del sistema utilizadas}: \texttt{sys.indexes}, \texttt{sys.index\_columns} (ic), \texttt{sys.columns} (c), \texttt{sys.tables} y \texttt{sys.schemas}.
+    \item \textbf{Logica SQL de Concatenacion}:
+        Dado que un indice puede ser compuesto (multiples columnas), se emplea la funcion \texttt{STRING\_AGG} ordenando los elementos por \texttt{ic.key\_ordinal}. Ademas, se verifica la propiedad \texttt{ic.is\_descending\_key} para agregar el sufijo \texttt{ASC} o \texttt{DESC} a la columna, proporcionando informacion precisa de ordenamiento fisico.
+\end{itemize}
+
+\subsection{R5: Triggers Activos en el Esquema}
+Lista el comportamiento activo automatizado (disparadores) sobre las tablas del sistema.
+\begin{itemize}
+    \item \textbf{Tablas del sistema utilizadas}: \texttt{sys.triggers} (tr), \texttt{sys.trigger\_events} (te) y \texttt{sys.tables} (t).
+    \item \textbf{Logica SQL}:
+        Los triggers se clasifican segun su tipo de activacion consultando \texttt{tr.is\_instead\_of\_trigger} (retorna \texttt{INSTEAD OF} si es verdadero, o \texttt{AFTER} por defecto). El estado de habilitacion se extrae de \texttt{tr.is\_disabled}. Los eventos asociados (\texttt{INSERT}, \texttt{UPDATE}, \texttt{DELETE}) se obtienen agrupando por \texttt{sys.trigger\_events}.
+\end{itemize}
+
+\subsection{R6: Tamano Fisico Ocupado por cada Tabla}
+Para determinar el espacio en almacenamiento persistente de cada objeto, se debe interrogar las estadisticas fisicas de paginacion del motor de base de datos.
+\begin{itemize}
+    \item \textbf{Tablas del sistema utilizadas}: 
+        \begin{itemize}
+            \item \texttt{sys.tables} y \texttt{sys.schemas}.
+            \item \texttt{sys.dm\_db\_partition\_stats} (ps): Vista de administracion dinamica que expone el conteo de paginas de datos y filas por particion de objeto.
+        \end{itemize}
+    \item \textbf{Logica de Computo Espacial}:
+        SQL Server organiza los datos fisicamente en paginas de \textbf{8 KB}. Para calcular el tamano real:
+        \begin{itemize}
+            \item \textbf{Filas totales}: Suma de \texttt{ps.row\_count} donde \texttt{ps.index\_id} es $0$ (Heap) o $1$ (Clustered Index).
+            \item \textbf{Datos (KB)}: Paginas usadas por el monton o indice agrupado multiplicado por 8:
+            \[ \text{Datos (KB)} = \sum_{\text{index\_id} \in \{0,1\}} \text{ps.used\_page\_count} \times 8 \]
+            \item \textbf{Indices (KB)}: Paginas usadas por los indices no agrupados adicionales (\texttt{index\_id} $> 1$) multiplicado por 8:
+            \[ \text{Indices (KB)} = \sum_{\text{index\_id} > 1} \text{ps.used\_page\_count} \times 8 \]
+            \item \textbf{Total Usado (KB)}: Suma total de las paginas utilizadas de la tabla por 8.
+        \end{itemize}
+\end{itemize}
+
+\subsection{R7: Estimacion del Tamano del Registro en Bytes}
+Calcula de forma teorica cuanto ocupa un registro (tupla) completo de cada tabla en memoria o disco.
+\begin{itemize}
+    \item \textbf{Formula de Estimacion}:
+        De acuerdo con el enunciado, para efectos de uniformidad, el tamano estimado del registro de una tabla $T$ se calcula sumando la longitud maxima fisica declarada de todas sus columnas constituyentes:
+        \begin{equation}
+            S_{reg}(T) = \sum_{c \in T} c.\text{max\_length}
+        \end{equation}
+    \item \textbf{Tablas del sistema utilizadas}: \texttt{sys.columns} (c), \texttt{sys.tables} (t) y \texttt{sys.schemas} (s).
+    \item \textbf{Justificacion Fisica}:
+        El atributo \texttt{max\_length} en la vista \texttt{sys.columns} representa el tamano de bytes fisico que el tipo de datos reserva en el registro. Por ejemplo, un tipo \texttt{VARCHAR(50)} tiene una longitud maxima de 50 bytes, mientras que un tipo Unicode \texttt{NVARCHAR(50)} ocupa fisicamente 100 bytes (2 bytes por caracter). Esto asegura estimaciones realistas basadas en el almacenamiento en paginas de disco.
+\end{itemize}
+
+\subsection{R8: Tamano de cada Columna segun su Tipo de Dato}
+Permite desglosar de forma pormenorizada las propiedades fisicas de las columnas de cada tabla.
+\begin{itemize}
+    \item \textbf{Tablas del sistema utilizadas}: \texttt{sys.columns}, \texttt{sys.types} (tp), \texttt{sys.tables} y \texttt{sys.schemas}.
+    \item \textbf{Logica SQL para la Definicion de Tipos}:
+        Se utiliza una expresion condicional \texttt{CASE} para reconstruir la sintaxis SQL de tipos:
+        \begin{itemize}
+            \item Para \texttt{varchar} y \texttt{char}: Se muestra la longitud en bytes directa de \texttt{max\_length}.
+            \item Para \texttt{nvarchar} y \texttt{nchar}: Se muestra la longitud logica de caracteres dividiendo entre 2 (\texttt{max\_length/2}).
+            \item Para \texttt{decimal} y \texttt{numeric}: Se concatenan la precision y la escala declaradas: \texttt{tp.name(precision, scale)}.
+        \end{itemize}
+\end{itemize}
+
+\subsection{R9: Calculo del Factor de Bloqueo}
+El \textbf{Factor de Bloqueo (Blocking Factor, $FB$)} representa el numero maximo de registros completos que pueden almacenarse dentro de un bloque fisico de datos (pagina de datos).
+\begin{itemize}
+    \item \textbf{Supuesto de Computo}: Los registros son de longitud fija y no se extienden a lo largo de varias paginas.
+    \item \textbf{Constante Fisica}: En SQL Server, una pagina de datos tiene un tamano fijo de \textbf{8192 bytes} (8 KB).
+    \item \textbf{Formula de Factor de Bloqueo para Tablas}:
+        \begin{equation}
+            FB_{\text{tabla}} = \left\lfloor \frac{8192}{\text{Tamano Estimado del Registro en Bytes}} \right\rfloor = \left\lfloor \frac{8192}{S_{reg}} \right\rfloor
+        \end{equation}
+    \item \textbf{Formula de Factor de Bloqueo para Indices}:
+        Para los indices, el factor de bloqueo se calcula determinando primero la longitud de la clave del indice. Esta longitud corresponde a la suma de los tamanos fisicos de las columnas que conforman la clave indexada:
+        \begin{equation}
+            S_{\text{clave\_indice}} = \sum_{c \in \text{Claves}} c.\text{max\_length}
+        \end{equation}
+        El factor de bloqueo de indice ($FB_{\text{indice}}$) se define como:
+        \begin{equation}
+            FB_{\text{indice}} = \left\lfloor \frac{8192}{S_{\text{clave\_indice}}} \right\rfloor
+        \end{equation}
+\end{itemize}
+
+\subsection{R10: Estimacion del Costo y Tiempo para Consultas de Igualdad}
+Este requerimiento evalua el impacto del uso de indices en consultas de busqueda exacta (\texttt{WHERE columna = valor}).
+
+\subsubsection{1. Deteccion de Indices Utilizables}
+Para que un indice sea utilizable en una busqueda de igualdad sobre una columna dada, dicha columna debe ser el \textbf{primer atributo de ordenacion en la estructura del indice}. Logicamente, esto se detecta en la tabla \texttt{sys.index\_columns} verificando que \texttt{key\_ordinal = 1}.
+
+\subsubsection{2. Caso A: Acceso Secuencial (Full Table Scan)}
+Se produce si no existe ningun indice aplicable a la consulta.
+\begin{itemize}
+    \item \textbf{Costo en Accesos a Disco}: Se lee secuencialmente la tabla completa desde el disco. El costo es igual al total de paginas usadas por los datos de la tabla ($P$):
+    \begin{equation}
+        C_{\text{scan}} = P
+    \end{equation}
+    \item \textbf{Costo en Tiempo}:
+        Utilizando la velocidad de transferencia del disco de \textbf{17 MB/s} ($17 \times 1024 \times 1024$ bytes por segundo), calculamos el tiempo requerido para transferir $P$ paginas a memoria:
+        \begin{equation}
+            T_{\text{scan}} = \frac{C_{\text{scan}} \times 8192 \text{ bytes}}{17 \times 1024 \times 1024 \text{ bytes/seg}} \approx C_{\text{scan}} \times 0.0004595 \text{ segundos}
+        \end{equation}
+\end{itemize}
+
+\subsubsection{3. Caso B: Acceso por Indice (Index Seek)}
+Si se encuentra un indice donde la columna consultada sea el atributo de clave principal.
+\begin{itemize}
+    \item \textbf{Altura Estimada del Arbol B-Tree ($h$)}:
+        La altura del arbol de indices regula la cantidad de lecturas de nodos directorio antes de alcanzar el nodo hoja. Academicamente, asumiendo un factor de ramificacion (\textbf{fan-out}) promedio de $F = 100$ entradas por nodo de indice, la altura se estima como:
+        \begin{equation}
+            h = \max\left(1, \left\lceil \log_{100}(P) \right\rceil\right)
+        \end{equation}
+    \item \textbf{Costo en Accesos a Disco para Clustered Index (Indice Agrupado)}:
+        En un indice agrupado, las paginas hoja del indice son las mismas paginas de datos de la tabla. Al llegar al nivel hoja, se encuentra el registro directamente. El costo es recorrer la altura del B-Tree mas leer la pagina de datos final:
+        \begin{equation}
+            C_{\text{seek, clustered}} = h + 1
+        \end{equation}
+    \item \textbf{Costo en Accesos a Disco para Non-Clustered Index (Indice No Agrupado)}:
+        En un indice no agrupado, las paginas hoja contienen punteros fisicos (o la clave de ordenacion agrupada) que apuntan al registro real en la tabla de datos. Por lo tanto, el sistema debe recorrer el arbol de indice y realizar un acceso adicional a disco (Lookup) para recuperar la tupla de datos real:
+        \begin{equation}
+            C_{\text{seek, non-clustered}} = h + 1 \text{ (Index Seek)} + 1 \text{ (Data Page Lookup)} = h + 2
+        \end{equation}
+    \item \textbf{Acotacion de Costo}:
+        En tablas muy pequenas (diminutas), el costo estimado de un seek podria ser superior al numero total de paginas fisicas de la tabla ($P$). En la practica, el optimizador de consultas preferira un escaneo secuencial en estos casos. Por ende, la aplicacion acota el costo indexado:
+        \begin{equation}
+            C_{\text{seek}} = \min(C_{\text{seek, calculado}}, C_{\text{scan}})
+        \end{equation}
+    \item \textbf{Costo en Tiempo}:
+        El calculo del tiempo para la busqueda indexada se deduce multiplicando los accesos a disco por el tiempo de lectura de pagina fisica:
+        \begin{equation}
+            T_{\text{seek}} = \frac{C_{\text{seek}} \times 8192 \text{ bytes}}{17 \times 1024 \times 1024 \text{ bytes/seg}} \approx C_{\text{seek}} \times 0.0004595 \text{ segundos}
+        \end{equation}
+\end{itemize}
+
+\newpage
+
+% ==============================================================================
+% SECCION 3: INSTRUCCIONES DE EJECUCION
+% ==============================================================================
+\section{Instrucciones de Ejecucion Detalladas}
+Esta seccion detalla los pasos requeridos para preparar el entorno de base de datos, configurar la conexion logica de la aplicacion y ejecutar la interfaz de usuario en cualquier equipo local.
+
+\subsection{Paso 1: Instalacion de Prerrequisitos}
+Antes de iniciar, es indispensable que el sistema cuente con los siguientes componentes:
+\begin{enumerate}
+    \item \textbf{Python 3.11 o superior}: Verifique la version instalada ejecutando en la terminal:
+    \begin{lstlisting}[language=bash]
+python --version
+    \end{lstlisting}
+    \item \textbf{Microsoft SQL Server}: Debe estar activo y accesible en la red local o mediante un contenedor Docker.
+    \item \textbf{Driver ODBC de SQL Server}: El sistema operativo debe tener instalado el driver oficial de Microsoft. Las versiones compatibles son:
+    \begin{itemize}
+        \item \texttt{ODBC Driver 17 for SQL Server} (Recomendado y configurado por defecto)
+        \item \texttt{ODBC Driver 18 for SQL Server}
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Paso 2: Instalacion de las Dependencias de Python}
+Abra su terminal o consola de comandos en la raiz del proyecto (directorio \texttt{Fase-1}) e instale las bibliotecas listadas en \texttt{requirements.txt} utilizando el gestor de paquetes \texttt{pip}:
+\begin{lstlisting}[language=bash]
+pip install -r requirements.txt
+\end{lstlisting}
+Este comando instalara los modulos esenciales:
+\begin{itemize}
+    \item \textbf{Streamlit}: Para renderizar la interfaz grafica web interactiva.
+    \item \textbf{pyodbc}: Para realizar la conexion nativa a la base de datos SQL Server.
+    \item \textbf{pandas}: Para la manipulacion, limpieza y visualizacion en tablas de los DataFrames resultantes.
+\end{itemize}
+
+\subsection{Paso 3: Creacion y Poblado de la Base de Datos}
+Para facilitar la creacion de la base de datos de pruebas \texttt{StreamUCV} y su esquema de trabajo \texttt{streaming}, se incluye un script integrador automatico llamado \texttt{setup\_db.py} que ejecuta ordenadamente los scripts SQL provistos en la carpeta \texttt{scripts/}:
+\begin{enumerate}
+    \item \texttt{create\_repositorio\_sqlserver.sql}: Crea la base de datos vacia \texttt{StreamUCV} y establece el esquema \texttt{streaming}.
+    \item \texttt{create\_tables\_sqlserver.sql}: Crea todas las tablas fisicas del esquema, sus respectivas claves primarias, claves foraneas, restricciones de verificacion (\texttt{CHECK}) e indices asociados.
+    \item \texttt{insert\_tables\_sqlserver.sql}: Realiza la carga masiva de registros de prueba (series, peliculas, artistas, personajes, horarios, ventas, etc.) requeridos para el correcto funcionamiento del reporte.
+\end{enumerate}
+
+Para ejecutar el configurador automatizado, corra el siguiente comando:
+\begin{lstlisting}[language=bash]
+python setup_db.py
+\end{lstlisting}
+\textit{Nota: Si la conexion a la instancia maestra de SQL Server falla, asegurese de que el servidor por defecto en \texttt{app/config.py} coincida con su instancia local (por ejemplo, \texttt{localhost\textbackslash SQLEXPRESS}).}
+
+\subsection{Paso 4: Configuracion de Parametros de Conexion}
+Para garantizar la portabilidad, el archivo \texttt{app/config.py} define los valores globales por defecto. Puede editar este archivo para adaptarlo permanentemente a su infraestructura:
+\begin{lstlisting}[language=python]
+# app/config.py
+SERVER = "localhost\\SQLEXPRESS"   # Su servidor o instancia
+DATABASE = "StreamUCV"              # Base de datos
+USERNAME = ""                       # Deje vacio si usa Windows Auth
+PASSWORD = ""                       # Contrasena del usuario SQL
+DRIVER = "ODBC Driver 17 for SQL Server"
+\end{lstlisting}
+
+\subsubsection{Autenticacion de Windows (Windows Auth)}
+Si se deja el usuario y la contrasena como cadenas vacias (\texttt{""}), la capa de conexion configurara automaticamente la propiedad \texttt{Trusted\_Connection=yes}. Esto significa que heredara las credenciales del usuario actual del sistema operativo Windows, eliminando la necesidad de exponer contrasenas en texto claro.
+
+\subsection{Paso 5: Lanzamiento de la Aplicacion}
+Para iniciar la interfaz interactiva con el servidor de desarrollo Streamlit, ejecute el siguiente comando en la raiz del proyecto:
+\begin{lstlisting}[language=bash]
+streamlit run main.py
+\end{lstlisting}
+De manera automatica, se iniciara el servidor local y se abrira una ventana en su navegador web predeterminado cargando la interfaz grafica (tipicamente en la direccion \url{http://localhost:8501}).
+
+\subsection{Paso 6: Uso y Navegacion de la Aplicacion}
+\begin{enumerate}
+    \item \textbf{Barra Lateral (Sidebar)}: En el panel izquierdo de la pantalla, podra visualizar los parametros de conexion actuales extraidos de \texttt{config.py}. Podra editar cualquier valor (Servidor, Base de datos, Usuario, Contrasena, Driver) directamente desde la interfaz y hacer clic en el boton \textbf{"Probar Conexion"}. El sistema validara las credenciales y mostrara un mensaje de exito o el error detallado devuelto por SQL Server.
+    \item \textbf{Pestanas de Requerimientos}: La pantalla principal se divide en secciones dedicadas:
+    \begin{itemize}
+        \item \textbf{Estructura Logica}: Pestanas dedicadas a listar Tablas e Indices (R1), Conteos Logicos (R2), Restricciones de Integridad (R3) y Detalle de Indices por Columna (R4).
+        \item \textbf{Eventos y Disparadores}: Muestra los triggers asociados a tablas y sus tipos de activacion (R5).
+        \item \textbf{Almacenamiento Fisico}: Expone el Tamano Ocupado por Tabla en bytes y Megabytes (R6), estimacion del registro de cada tabla (R7) y detalles de tamano por columna segun el tipo de dato fisico de SQL Server (R8).
+        \item \textbf{Factor de Bloqueo}: Visualiza los registros por bloque/pagina estimados de tablas e indices (R9).
+        \item \textbf{Costo de Consulta (R10)}: Ofrece dos menus desplegables para seleccionar cualquier tabla y columna. Al presionar el boton de calculo, la aplicacion evalua dinamicamente si existe un indice aplicable en el Diccionario de Datos, y compara el costo de accesos a disco y el tiempo de respuesta estimado entre un escaneo secuencial (\textit{Full Table Scan}) y un acceso directo por arbol (\textit{Index Seek}).
+    \end{itemize}
+\end{enumerate}
+
+\end{document}

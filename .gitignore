@@ -47,3 +47,20 @@ venv.bak/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Archivos temporales y auxiliares de LaTeX (excluyendo .pdf y .tex)
+*.aux
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.blg
+*.bbl
+*.nav
+*.snm
+*.vrb
+*.lof
+*.lot
+*.run.xml
+*.bcf
