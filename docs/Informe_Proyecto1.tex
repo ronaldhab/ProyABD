@@ -232,21 +232,21 @@ La arquitectura de la solución aporta ventajas clave frente a una ejecución SQ
 \section{Explicación del Uso del Diccionario de Datos}
 El Diccionario de Datos (D/D) es el conjunto de vistas internas del esquema \texttt{sys} que almacenan los metadatos de SQL Server. La aplicación consulta exclusivamente estas vistas para obtener información sobre la estructura lógica y física de la base de datos.
 
-\subsection{R1: Listado de Tablas e Índices}
+\subsection{Listado de Tablas e Índices}
 Lista las tablas e índices del esquema \texttt{streaming}.
 \begin{itemize}
     \item \textbf{Vistas utilizadas}: \texttt{sys.tables}, \texttt{sys.schemas}, \texttt{sys.indexes}.
     \item \textbf{Lógica}: Se unen las vistas filtrando por \texttt{s.name = 'streaming'}. Para índices se excluyen las filas con \texttt{i.name IS NULL} (Heap).
 \end{itemize}
 
-\subsection{R2: Conteo de Tablas e Índices por Tabla}
+\subsection{Conteo de Tablas e Índices por Tabla}
 Indica la cantidad total de tablas y cuántos índices tiene cada una.
 \begin{itemize}
     \item \textbf{Vistas utilizadas}: \texttt{sys.tables}, \texttt{sys.schemas}, \texttt{sys.indexes}.
     \item \textbf{Lógica}: Conteo escalar de tablas y \texttt{LEFT JOIN} con \texttt{sys.indexes} agrupando por tabla.
 \end{itemize}
 
-\subsection{R3: Restricciones del Esquema}
+\subsection{Restricciones del Esquema}
 Enumera las restricciones de integridad declaradas.
 \begin{itemize}
     \item \textbf{Vistas utilizadas}: \texttt{sys.objects}, \texttt{sys.tables}, \texttt{sys.schemas}.
@@ -267,21 +267,21 @@ Enumera las restricciones de integridad declaradas.
         \end{center}
 \end{itemize}
 
-\subsection{R4: Columnas de cada Índice}
+\subsection{Columnas de cada Índice}
 Detalla qué columnas componen cada índice y su orden.
 \begin{itemize}
     \item \textbf{Vistas utilizadas}: \texttt{sys.indexes}, \texttt{sys.index\_columns}, \texttt{sys.columns}.
     \item \textbf{Lógica}: Se usa \texttt{STRING\_AGG} ordenando por \texttt{ic.key\_ordinal}, indicando \texttt{ASC}/\texttt{DESC} según \texttt{ic.is\_descending\_key}.
 \end{itemize}
 
-\subsection{R5: Triggers del Esquema}
+\subsection{Triggers del Esquema}
 Lista los disparadores asociados a las tablas.
 \begin{itemize}
     \item \textbf{Vistas utilizadas}: \texttt{sys.triggers}, \texttt{sys.trigger\_events}, \texttt{sys.tables}.
     \item \textbf{Lógica}: Se clasifica el tipo (\texttt{AFTER} o \texttt{INSTEAD OF}) y el estado (habilitado/deshabilitado). Los eventos se agrupan con \texttt{STRING\_AGG}.
 \end{itemize}
 
-\subsection{R6: Tamaño Físico por Tabla}
+\subsection{Tamaño Físico por Tabla}
 Muestra el espacio en disco ocupado por cada tabla.
 \begin{itemize}
     \item \textbf{Vistas utilizadas}: \texttt{sys.tables}, \texttt{sys.dm\_db\_partition\_stats}.
@@ -295,7 +295,7 @@ Muestra el espacio en disco ocupado por cada tabla.
         Donde las páginas de datos corresponden a registros con \texttt{index\_id} $\in \{0,1\}$ (tabla base/Heap o índice clúster), y las páginas de índices a registros con \texttt{index\_id} $> 1$ (índices no agrupados).
 \end{itemize}
 
-\subsection{R7: Tamaño Estimado del Registro}
+\subsection{Estimación del Tamaño de Registro}
 Estima cuántos bytes ocupa un registro completo de cada tabla en promedio.
 \begin{itemize}
     \item \textbf{Vistas utilizadas}: \texttt{sys.columns}, \texttt{sys.tables}.
@@ -308,14 +308,14 @@ Estima cuántos bytes ocupa un registro completo de cada tabla en promedio.
         \textit{Ejemplo práctico:} Una columna \texttt{VARCHAR(50)} aporta $50\text{ bytes}$, mientras que una de tipo \texttt{NVARCHAR(50)} aporta $100\text{ bytes}$ (debido a la codificación de doble byte de caracteres Unicode).
 \end{itemize}
 
-\subsection{R8: Tamaño de cada Columna}
+\subsection{Tamaño de cada Columna según su Tipo de Dato}
 Desglosa el tipo de dato y tamaño físico de cada columna.
 \begin{itemize}
     \item \textbf{Vistas utilizadas}: \texttt{sys.columns}, \texttt{sys.types}.
     \item \textbf{Lógica}: Se reconstruye la definición SQL de la columna a partir de su tipo mediante sentencias condicionales (\texttt{varchar(n)}, \texttt{nvarchar(n/2)}, \texttt{decimal(p,s)}, etc.).
 \end{itemize}
 
-\subsection{R9: Factor de Bloqueo}
+\subsection{Factor de Bloqueo de Tablas e Índices}
 El \textbf{Factor de Bloqueo} indica cuántos registros caben como máximo en una única página física de 8 KB ($8192\text{ bytes}$).
 \begin{itemize}
     \item \textbf{Factor de Bloqueo de la Tabla}:
@@ -329,7 +329,7 @@ El \textbf{Factor de Bloqueo} indica cuántos registros caben como máximo en un
         Donde el \textit{Tamaño de la Clave} es la suma de las longitudes de las columnas que forman parte de dicho índice.
 \end{itemize}
 
-\subsection{R10: Costo de Consultas de Igualdad}
+\subsection{Costo de Consultas de Igualdad}
 Estima el costo de ejecutar una consulta de tipo \texttt{WHERE columna = valor} en términos de accesos a páginas y tiempo.
 
 \subsubsection{1. Detección de Índices}

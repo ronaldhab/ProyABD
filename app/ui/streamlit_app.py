@@ -198,17 +198,17 @@ def main():
 
     # Pestañas para cada requerimiento
     tab_home, tab_r1, tab_r2, tab_r3, tab_r4, tab_r5, tab_r6, tab_r7, tab_r8, tab_r9, tab_r10 = st.tabs([
-        "🏠 Inicio", 
-        "R1: Tablas e Índices", 
-        "R2: Conteos", 
-        "R3: Restricciones", 
-        "R4: Detalle Índices", 
-        "R5: Triggers", 
-        "R6: Tamaños Tablas", 
-        "R7: Registros", 
-        "R8: Columnas", 
-        "R9: Bloqueos", 
-        "R10: Costos"
+        "Inicio", 
+        "Listado de Tablas e Índices", 
+        "Conteo de Tablas e Índices por Tabla", 
+        "Restricciones del Esquema", 
+        "Columnas de cada Índice", 
+        "Triggers del Esquema", 
+        "Tamaño Físico por Tabla", 
+        "Estimación del Tamaño de Registro", 
+        "Tamaño de cada Columna según su Tipo de Dato", 
+        "Factor de Bloqueo de Tablas e Índices", 
+        "Costo de Consultas de Igualdad"
     ])
 
     # --- PESTAÑA INICIO ---
