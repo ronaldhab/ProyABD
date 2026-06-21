@@ -4,8 +4,6 @@ def inject_styles():
     """Inyecta los estilos CSS personalizados y fuentes de Google en la aplicación Streamlit."""
     st.markdown("""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap');
-
         :root {
             --navy-primary: #092C74;
             --blue-accent: #3A73C4;
@@ -153,6 +151,18 @@ def inject_styles():
             font-family: 'Montserrat', sans-serif;
             font-weight: 600;
             font-size: 0.92rem;
+        }
+
+        /* Ajustar dimensiones del logo (contenedor e imagen interna) para que mantenga aspect ratio y escale correctamente */
+        [data-testid="stLogo"],
+        [data-testid="stLogo"] img,
+        [data-testid="stLogo"] > img {
+            height: 4.8rem !important;
+            max-height: 4.8rem !important;
+            width: auto !important;
+            max-width: none !important;
+            margin-top: 0.5rem !important;
+            margin-bottom: 0.5rem !important;
         }
     </style>
     """, unsafe_allow_html=True)

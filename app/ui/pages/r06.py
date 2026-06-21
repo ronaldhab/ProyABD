@@ -1,9 +1,7 @@
 import streamlit as st
-from app.ui.styles import inject_styles
 from app.ui.pages._shared import inject_sidebar, get_conn_params, render_back_button, cached_get_tamano_tablas
 
-# Inyectar estilos y sidebar
-inject_styles()
+# Inyectar sidebar
 inject_sidebar()
 
 st.markdown('<h2 class="page-title">Espacio Ocupado por cada Tabla en Disco</h2>', unsafe_allow_html=True)

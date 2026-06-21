@@ -1,4 +1,5 @@
 import streamlit as st
+from app.ui.styles import inject_styles
 
 # Configuración de página centralizada (requerido al usar st.navigation)
 st.set_page_config(
@@ -8,12 +9,22 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Inyectar fuentes Google a nivel global una sola vez para evitar parpadeos en transiciones (FOUT)
+st.markdown("""
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+""", unsafe_allow_html=True)
+
+# Inyectar estilos CSS personalizados a nivel global
+inject_styles()
+
 # Definición de las páginas del sistema
 menu = st.Page("app/ui/pages/menu.py", title="Menú Principal", default=True)
 r01  = st.Page("app/ui/pages/r01.py",  title="Listar Tablas e Índices")
-r02  = st.Page("app/ui/pages/r02.py",  title="Conteo de Tablas e Índices")
-r03  = st.Page("app/ui/pages/r03.py",  title="Consultar Restricciones del Esquema")
-r04  = st.Page("app/ui/pages/r04.py",  title="Consultar Detalles de Índices")
+r02  = st.Page("app/ui/pages/r02.py",  title="Contabilizar Tablas e Índices")
+r03  = st.Page("app/ui/pages/r03.py",  title="Examinar Restricciones del Esquema")
+r04  = st.Page("app/ui/pages/r04.py",  title="Inspeccionar Detalles de Índices")
 r05  = st.Page("app/ui/pages/r05.py",  title="Verificar Triggers del Esquema")
 r06  = st.Page("app/ui/pages/r06.py",  title="Consultar Tamaño de Tablas")
 r07  = st.Page("app/ui/pages/r07.py",  title="Estimar Tamaño de Registro por Tabla")

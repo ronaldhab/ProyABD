@@ -1,10 +1,8 @@
 import streamlit as st
 import pandas as pd
-from app.ui.styles import inject_styles
 from app.ui.pages._shared import inject_sidebar, get_conn_params, render_back_button, cached_get_tables_and_columns, cached_estimate_query_cost
 
-# Inyectar estilos y sidebar
-inject_styles()
+# Inyectar sidebar
 inject_sidebar()
 
 st.markdown('<h2 class="page-title">Estimador de Costo de Consulta</h2>', unsafe_allow_html=True)

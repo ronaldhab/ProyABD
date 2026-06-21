@@ -1,9 +1,7 @@
 import streamlit as st
-from app.ui.styles import inject_styles
 from app.ui.pages._shared import inject_sidebar, get_conn_params, render_back_button, cached_get_conteo_tablas_indices
 
-# Inyectar estilos y sidebar
-inject_styles()
+# Inyectar sidebar
 inject_sidebar()
 
 st.markdown('<h2 class="page-title">Cantidad de Tablas y Conteo de Índices por Tabla</h2>', unsafe_allow_html=True)

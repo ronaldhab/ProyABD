@@ -1,10 +1,8 @@
 import streamlit as st
-from app.ui.styles import inject_styles
 from app.ui.pages._shared import inject_sidebar, get_conn_params
 from app import config
 
-# Inyectar estilos globales y sidebar
-inject_styles()
+# Inyectar sidebar
 inject_sidebar()
 
 st.markdown('<h1 class="page-title">🎬 StreamUCV</h1>', unsafe_allow_html=True)

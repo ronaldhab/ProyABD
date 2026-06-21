@@ -147,9 +147,13 @@ def inject_sidebar():
     """Dibuja el sidebar común en la aplicación."""
     init_session_state()
     
-    with st.sidebar:
+    # 1. Colocar el logotipo en la parte superior absoluta de la barra lateral (por encima del menú de navegación)
+    svg_path = os.path.join("assets", "images", "streamUCV.svg")
+    if os.path.exists(svg_path):
+        st.logo(svg_path)
         
-        # Parámetros de conexión agrupados en un desplegable (expander)
+    with st.sidebar:
+        # 2. Parámetros de conexión agrupados en un desplegable (expander)
         with st.expander("🔌 Conexión SQL Server", expanded=False):
             st.markdown("Ajusta los parámetros para conectarte a tu instancia local de SQL Server.")
             
@@ -177,15 +181,21 @@ def inject_sidebar():
             if st.button("🧪 Probar Conexión", use_container_width=True):
                 success, msg = test_connection(server_input, db_input, user_input, pass_input, driver_input)
                 if success:
-                    st.success("Conexión establecida correctamente")
                     st.session_state.conn_server = server_input
                     st.session_state.conn_database = db_input
                     st.session_state.conn_user = user_input
                     st.session_state.conn_password = pass_input
                     st.session_state.conn_driver = driver_input
+                    st.session_state.show_conn_success = True
                     st.rerun()
                 else:
                     st.error(f"Error de conexión:\n\n{msg}")
+
+        # Mostrar el mensaje de éxito persistente fuera del expander para que se mantenga visible tras el rerun
+        if st.session_state.get("show_conn_success", False):
+            st.success("Conexión establecida correctamente")
+            # Apagar la bandera en la siguiente interacción para que no persista indefinidamente
+            st.session_state.show_conn_success = False
 
         st.markdown("---")
         st.markdown("🎓 **Administración de Bases de Datos**")
