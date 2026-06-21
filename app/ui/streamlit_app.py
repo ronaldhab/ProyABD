@@ -76,41 +76,168 @@ def main():
         initial_sidebar_state="expanded"
     )
 
-    # Estilos personalizados para diseño premium
+    # Estilos profesionales con personalidad
     st.markdown("""
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        html, body, [class*="css"] {
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+
         .main-title {
-            font-family: 'Outfit', 'Inter', sans-serif;
             font-weight: 800;
-            background: linear-gradient(135deg, #FF4B4B, #8500FF);
+            background: linear-gradient(135deg, #0EA5A0, #D4A373);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: 3rem;
+            font-size: 2.8rem;
             margin-bottom: 0.1rem;
+            letter-spacing: -0.5px;
         }
         .subtitle {
-            font-family: 'Inter', sans-serif;
-            color: #888888;
-            font-size: 1.1rem;
+            color: #9CA3AF;
+            font-size: 1.05rem;
+            font-weight: 400;
             margin-bottom: 2rem;
         }
+
         .metric-card {
-            background-color: #1E1E24;
+            background: #1A1D24;
             border-radius: 10px;
-            padding: 15px;
-            border: 1px solid #2D2D34;
+            padding: 18px 15px;
+            border: 1px solid #2D313A;
             text-align: center;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .metric-card:hover {
+            border-color: #0EA5A0;
+            box-shadow: 0 0 0 1px rgba(14, 165, 160, 0.15);
         }
         .metric-value {
             font-size: 2.2rem;
             font-weight: 700;
-            color: #FF4B4B;
+            background: linear-gradient(135deg, #0EA5A0, #D4A373);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         .metric-label {
-            font-size: 0.9rem;
-            color: #888888;
+            font-size: 0.8rem;
+            color: #9CA3AF;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        section[data-testid="stSidebar"] {
+            background: #111318;
+            border-right: 1px solid #1F2229;
+        }
+        section[data-testid="stSidebar"] .stButton button {
+            width: 100%;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background 0.15s;
+        }
+        section[data-testid="stSidebar"] .stButton button:hover {
+            background: rgba(14, 165, 160, 0.1);
+        }
+
+        .stDataFrame {
+            border-radius: 8px;
+            border: 1px solid #2D313A;
+        }
+        .stDataFrame thead tr th {
+            background: #1A1D24 !important;
+            color: #0EA5A0 !important;
+            font-weight: 600;
+            border-bottom: 1px solid #2D313A;
+        }
+        .stDataFrame tbody tr:nth-child(even) {
+            background: rgba(14, 165, 160, 0.03);
+        }
+        .stDataFrame tbody tr:hover {
+            background: rgba(14, 165, 160, 0.07);
+        }
+
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 1px;
+            background: #111318;
+            border-radius: 8px;
+            padding: 3px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #2D313A transparent;
+        }
+        .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar {
+            height: 3px;
+        }
+        .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar-thumb {
+            background: #2D313A;
+            border-radius: 4px;
+        }
+        .stTabs [data-baseweb="tab"] {
+            border-radius: 6px;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #9CA3AF;
+            transition: background 0.15s, color 0.15s;
+            white-space: nowrap;
+            min-width: fit-content;
+        }
+        .stTabs [data-baseweb="tab"]:hover {
+            background: rgba(14, 165, 160, 0.08);
+            color: #E5E7EB;
+        }
+        .stTabs [aria-selected="true"] {
+            background: #1A1D24 !important;
+            color: #0EA5A0 !important;
+            border-bottom: none !important;
+            box-shadow: inset 0 -1px 0 #0EA5A0;
+        }
+
+        .stAlert {
+            background: #1A1D24 !important;
+            border: 1px solid #2D313A !important;
+            border-radius: 8px !important;
+        }
+        .stAlert [data-baseweb="icon"] {
+            color: #0EA5A0 !important;
+        }
+
+        .stTextInput input, .stSelectbox > div > div {
+            border-color: #2D313A !important;
+            border-radius: 6px !important;
+        }
+        .stTextInput input:focus, .stSelectbox > div > div:focus-within {
+            border-color: #0EA5A0 !important;
+            box-shadow: 0 0 0 1px #0EA5A0 !important;
+        }
+
+        .stButton button {
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.15s;
+        }
+
+        h1, h2, h3 {
+            font-weight: 700 !important;
+            color: #F0F0F0 !important;
+        }
+        h3 {
+            font-size: 1.15rem !important;
+        }
+
+        .stCaption {
+            color: #6B7280 !important;
+        }
+        hr {
+            border-color: #2D313A !important;
+        }
+        .st-bw {
+            background-color: #1A1D24;
         }
     </style>
     """, unsafe_allow_html=True)
@@ -196,20 +323,21 @@ def main():
     st.markdown('<h1 class="main-title">🎬 StreamUCV</h1>', unsafe_allow_html=True)
     st.markdown('<p class="subtitle">Módulo de Exploración Técnica del Diccionario de Datos de SQL Server</p>', unsafe_allow_html=True)
 
-    # Pestañas para cada requerimiento
-    tab_home, tab_r1, tab_r2, tab_r3, tab_r4, tab_r5, tab_r6, tab_r7, tab_r8, tab_r9, tab_r10 = st.tabs([
-        "Inicio", 
-        "Listado de Tablas e Índices", 
-        "Conteo de Tablas e Índices por Tabla", 
-        "Restricciones del Esquema", 
-        "Columnas de cada Índice", 
-        "Triggers del Esquema", 
-        "Tamaño Físico por Tabla", 
-        "Estimación del Tamaño de Registro", 
-        "Tamaño de cada Columna según su Tipo de Dato", 
-        "Factor de Bloqueo de Tablas e Índices", 
-        "Costo de Consultas de Igualdad"
-    ])
+    # Pestañas compactas para cada requerimiento
+    tab_labels = [
+        "🏠 Inicio",
+        "📋 R1: Tablas", 
+        "📊 R2: Conteo", 
+        "🔗 R3: Restricciones",
+        "📐 R4: Índices", 
+        "⚡ R5: Triggers",
+        "💾 R6: Tamaño",
+        "📏 R7: Registro",
+        "📐 R8: Columnas",
+        "📦 R9: Bloqueo",
+        "💰 R10: Costos",
+    ]
+    tab_home, tab_r1, tab_r2, tab_r3, tab_r4, tab_r5, tab_r6, tab_r7, tab_r8, tab_r9, tab_r10 = st.tabs(tab_labels)
 
     # --- PESTAÑA INICIO ---
     with tab_home:
