@@ -10,10 +10,10 @@
 
 % --- Geometría y espaciado ---
 \usepackage{geometry}
-\geometry{a4paper, top=2.5cm, bottom=2.5cm, left=2.8cm, right=2.8cm}
+\geometry{a4paper, top=2.8cm, bottom=2.8cm, left=3.0cm, right=3.0cm}
 \usepackage{setspace}
-\setstretch{1.15}
-\setlength{\parskip}{0.4em}
+\setstretch{1.20}
+\setlength{\parskip}{0.8em}
 
 % --- Paquetes de soporte ---
 \usepackage{amsmath}
@@ -58,7 +58,7 @@
 \titleformat{\section}
     {\Large\bfseries\color{ucvblue}}
     {\thesection.}{0.6em}{}
-    % [\vspace{-0.2em}{\color{secgray}\titlerule[1.5pt]}]
+    [\vspace{0.2em}{\color{codeframe}\titlerule[0.8pt]}]
 
 \titleformat{\subsection}
     {\large\bfseries\color{secgray}}
@@ -68,13 +68,13 @@
     {\normalsize\bfseries\color{secgray}}
     {\thesubsubsection}{0.5em}{}
 
-\titlespacing*{\section}{0pt}{1.8em}{0.8em}
-\titlespacing*{\subsection}{0pt}{1.2em}{0.4em}
-\titlespacing*{\subsubsection}{0pt}{0.8em}{0.3em}
+\titlespacing*{\section}{0pt}{2.4em}{1.2em}
+\titlespacing*{\subsection}{0pt}{1.8em}{0.8em}
+\titlespacing*{\subsubsection}{0pt}{1.4em}{0.6em}
 
-% --- Listas más compactas ---
-\setlist[itemize]{topsep=4pt, itemsep=2pt, parsep=1pt, leftmargin=1.5em}
-\setlist[enumerate]{topsep=4pt, itemsep=2pt, parsep=1pt, leftmargin=1.5em}
+% --- Listas con más aire y orden ---
+\setlist[itemize]{topsep=6pt, itemsep=4pt, parsep=2pt, leftmargin=1.8em}
+\setlist[enumerate]{topsep=6pt, itemsep=4pt, parsep=2pt, leftmargin=1.8em}
 
 % --- Bloques de código ---
 \newcommand{\macbuttons}{%
@@ -149,22 +149,36 @@
 % ==============================================================================
 \begin{titlepage}
     \centering
-    \vspace*{1cm}
-    {\large \textbf{UNIVERSIDAD CENTRAL DE VENEZUELA}}\\[0.2cm]
-    {\large \textbf{FACULTAD DE CIENCIAS}}\\[0.2cm]
-    {\large \textbf{ESCUELA DE COMPUTACIÓN}}\\[0.2cm]
-    {\large \textbf{ADMINISTRACIÓN DE BASES DE DATOS}}\\[1.5cm]
+    \vspace*{0.5cm}
     
-    \vspace{4cm}
+    % Logos de la Universidad y Facultad a cada lado del encabezado
+    \begin{minipage}{0.18\textwidth}
+        \flushleft
+        \includegraphics[height=2.2cm]{../logo_central.png}
+    \end{minipage}%
+    \begin{minipage}{0.64\textwidth}
+        \centering
+        {\large \textbf{UNIVERSIDAD CENTRAL DE VENEZUELA}}\\[0.15cm]
+        {\large \textbf{FACULTAD DE CIENCIAS}}\\[0.15cm]
+        {\large \textbf{ESCUELA DE COMPUTACIÓN}}\\[0.15cm]
+        {\large \textbf{ADMINISTRACIÓN DE BASES DE DATOS}}
+    \end{minipage}%
+    \begin{minipage}{0.18\textwidth}
+        \flushright
+        \includegraphics[height=2.2cm]{../logo_ciencias.png}
+    \end{minipage}
+    
+    \vspace{5cm}
     
     {\Large \textbf{PROYECTO \#1 --- STREAMUCV}}\\[0.4cm]
-    {\Large \textbf{INFORME TÉCNICO DE LA SOLUCIÓN}}\\[2.5cm]
+    {\Large \textbf{INFORME TÉCNICO DE LA SOLUCIÓN}}\\[2.2cm]
     
-    \vspace{4cm}
+    \vspace{5cm}
 
     \begin{minipage}{0.4\textwidth}
         \begin{flushleft} \large
             \emph{Grupo Docente:}\\
+            Profa. Concettina Di Vasta \\
             Br. Joiner Rojas\\
             Br. Maximiliano Barboza
         \end{flushleft}
@@ -177,7 +191,7 @@
             Brhandon Palomo\\
             Sebastián Russian\\
         \end{flushright}
-    \end{minipage}\\[4cm]
+    \end{minipage}\\[3cm]
     
     {\large Caracas, Junio de 2026}
 \end{titlepage}
@@ -193,21 +207,22 @@
 \textbf{StreamUCV} es una aplicación en \textbf{Python} con interfaz \textbf{Streamlit} que consulta en tiempo real el \textbf{Diccionario de Datos} de una instancia \textbf{SQL Server 2022} y presenta de forma visual los metadatos del esquema \texttt{streaming}.
 
 \subsection{Arquitectura de la Solución}
-La solución se organiza en capas con responsabilidades separadas:
-\begin{itemize}
-    \item \textbf{\texttt{main.py}}: Punto de entrada que configura Streamlit y lanza la interfaz.
-    \item \textbf{\texttt{app/config.py}}: Centraliza las variables de conexión (\texttt{SERVER}, \texttt{DATABASE}, \texttt{USERNAME}, \texttt{PASSWORD}, \texttt{DRIVER}) y las constantes de cómputo físico (página de 8192 bytes, transferencia de 17 MB/s).
-    \item \textbf{\texttt{app/connection.py}}: Gestiona conexiones a SQL Server vía \texttt{pyodbc}, soportando autenticación SQL y Windows Auth (\texttt{Trusted\_Connection=yes}).
-    \item \textbf{\texttt{app/queries/}}: 10 módulos independientes (\texttt{r01} a \texttt{r10}) que encapsulan las consultas al catálogo del sistema y los cálculos asociados, retornando \texttt{pandas.DataFrame}.
-    \item \textbf{\texttt{app/ui/streamlit\_app.py}}: Interfaz web con barra lateral para modificar parámetros de conexión en caliente y pestañas para cada requerimiento.
-\end{itemize}
+La solución se organiza en capas lógicas con responsabilidades bien delimitadas, asegurando modularidad y mantenimiento sencillo:
+\begin{description}[leftmargin=4.2cm, labelwidth=3.9cm, style=sameline, font=\ttfamily\bfseries\color{ucvblue}]
+    \item[main.py] Punto de entrada principal que inicializa Streamlit y lanza la aplicación.
+    \item[app/config.py] Centraliza los parámetros de conexión (\texttt{SERVER}, \texttt{DATABASE}, etc.) y las constantes físicas de cálculo (páginas de 8 KB y velocidad de 17 MB/s).
+    \item[app/connection.py] Administra el canal de comunicación con SQL Server mediante \texttt{pyodbc}, gestionando los intentos de conexión física.
+    \item[app/queries/] Módulos individuales (\texttt{r01.py} a \texttt{r10.py}) que aíslan la lógica de cada requerimiento del diccionario de datos, retornando conjuntos de datos listos para consumir.
+    \item[app/ui/streamlit\_app.py] Define la interfaz gráfica, organizando las pestañas, selectores dinámicos y la barra de navegación lateral.
+\end{description}
 
 \subsection{Beneficios del Diseño}
-\begin{enumerate}
-    \item \textbf{Portabilidad}: Los parámetros de conexión se definen en \texttt{config.py} y pueden sobrescribirse desde la interfaz, permitiendo ejecutar la aplicación en cualquier equipo sin modificar código.
-    \item \textbf{Eficiencia}: Se consultan las vistas del catálogo de sistema (\texttt{sys.*}) en lugar de leer datos de usuario, minimizando la carga sobre el motor.
-    \item \textbf{Interactividad}: Botones, tablas dinámicas y selectores reemplazan la ejecución manual de sentencias SQL.
-\end{enumerate}
+La arquitectura de la solución aporta ventajas clave frente a una ejecución SQL de consola tradicional:
+\begin{description}[leftmargin=2.8cm, labelwidth=2.5cm, style=sameline, font=\bfseries\color{ucvblue}]
+    \item[Portabilidad] Los parámetros de conexión pueden modificarse y probarse en tiempo de ejecución desde la interfaz web, permitiendo cambiar de servidor sin alterar el código.
+    \item[Eficiencia] Las consultas se realizan sobre el Diccionario de Datos del motor (\texttt{sys.*}), evitando escaneos costosos sobre datos de usuario reales.
+    \item[Interactividad] Transforma la administración pasiva de la base de datos en una experiencia visual enriquecida mediante tablas dinámicas, filtros reactivos y reportes limpios.
+\end{description}
 
 \newpage
 
@@ -236,8 +251,8 @@ Enumera las restricciones de integridad declaradas.
 \begin{itemize}
     \item \textbf{Vistas utilizadas}: \texttt{sys.objects}, \texttt{sys.tables}, \texttt{sys.schemas}.
     \item \textbf{Clasificación}: Se filtran por \texttt{c.type}:
-        \begin{table}[h!]
-            \centering
+        \begin{center}
+            \small
             \begin{tabular}{ll}
                 \toprule
                 \textbf{Código} & \textbf{Tipo de Restricción} \\
@@ -249,8 +264,7 @@ Enumera las restricciones de integridad declaradas.
                 \texttt{D}  & Valor por Defecto \\
                 \bottomrule
             \end{tabular}
-            \caption{Tipos de restricciones en \texttt{sys.objects}.}
-        \end{table}
+        \end{center}
 \end{itemize}
 
 \subsection{R4: Columnas de cada Índice}
@@ -271,69 +285,86 @@ Lista los disparadores asociados a las tablas.
 Muestra el espacio en disco ocupado por cada tabla.
 \begin{itemize}
     \item \textbf{Vistas utilizadas}: \texttt{sys.tables}, \texttt{sys.dm\_db\_partition\_stats}.
-    \item \textbf{Cálculos} (SQL Server usa páginas de \textbf{8 KB}):
-        \[ \text{Datos (KB)} = \sum_{\text{index\_id} \in \{0,1\}} \text{used\_page\_count} \times 8 \]
-        \[ \text{Índices (KB)} = \sum_{\text{index\_id} > 1} \text{used\_page\_count} \times 8 \]
+    \item \textbf{Fórmulas de Almacenamiento} (SQL Server almacena datos en páginas de $8\text{ KB}$):
+        \begin{equation}
+            \text{Espacio de Datos (KB)} = \text{Páginas de Datos} \times 8
+        \end{equation}
+        \begin{equation}
+            \text{Espacio de Índices (KB)} = \text{Páginas de Índices} \times 8
+        \end{equation}
+        Donde las páginas de datos corresponden a registros con \texttt{index\_id} $\in \{0,1\}$ (tabla base/Heap o índice clúster), y las páginas de índices a registros con \texttt{index\_id} $> 1$ (índices no agrupados).
 \end{itemize}
 
 \subsection{R7: Tamaño Estimado del Registro}
-Estima cuántos bytes ocupa un registro completo de cada tabla.
+Estima cuántos bytes ocupa un registro completo de cada tabla en promedio.
 \begin{itemize}
     \item \textbf{Vistas utilizadas}: \texttt{sys.columns}, \texttt{sys.tables}.
-    \item \textbf{Fórmula}: Se suman los tamaños máximos declarados de cada columna:
+    \item \textbf{Fórmula de Estimación}:
         \begin{equation}
-            S_{reg}(T) = \sum_{c \in T} c.\text{max\_length}
+            \text{Tamaño del Registro} = \sum \left( \text{Longitud de cada Columna} \right)
         \end{equation}
-        Ejemplo: \texttt{VARCHAR(50)} aporta 50 bytes; \texttt{NVARCHAR(50)} aporta 100 bytes (2 bytes/carácter).
+        Se obtiene sumando los tamaños máximos (\texttt{max\_length}) de todas las columnas de la tabla.
+        
+        \textit{Ejemplo práctico:} Una columna \texttt{VARCHAR(50)} aporta $50\text{ bytes}$, mientras que una de tipo \texttt{NVARCHAR(50)} aporta $100\text{ bytes}$ (debido a la codificación de doble byte de caracteres Unicode).
 \end{itemize}
 
 \subsection{R8: Tamaño de cada Columna}
 Desglosa el tipo de dato y tamaño físico de cada columna.
 \begin{itemize}
     \item \textbf{Vistas utilizadas}: \texttt{sys.columns}, \texttt{sys.types}.
-    \item \textbf{Lógica}: Se reconstruye la definición SQL con \texttt{CASE}: \texttt{varchar(n)}, \texttt{nvarchar(n/2)}, \texttt{decimal(p,s)}.
+    \item \textbf{Lógica}: Se reconstruye la definición SQL de la columna a partir de su tipo mediante sentencias condicionales (\texttt{varchar(n)}, \texttt{nvarchar(n/2)}, \texttt{decimal(p,s)}, etc.).
 \end{itemize}
 
 \subsection{R9: Factor de Bloqueo}
-El \textbf{Factor de Bloqueo ($FB$)} es el número máximo de registros por página de 8 KB.
+El \textbf{Factor de Bloqueo} indica cuántos registros caben como máximo en una única página física de 8 KB ($8192\text{ bytes}$).
 \begin{itemize}
-    \item \textbf{Para tablas}:
+    \item \textbf{Factor de Bloqueo de la Tabla}:
         \begin{equation}
-            FB_{\text{tabla}} = \left\lfloor \frac{8192}{S_{reg}} \right\rfloor
+            \text{Factor de Bloqueo}_{\text{Tabla}} = \left\lfloor \frac{8192}{\text{Tamaño del Registro}} \right\rfloor
         \end{equation}
-    \item \textbf{Para índices} (sumando las columnas clave):
+    \item \textbf{Factor de Bloqueo del Índice} (basado solo en las columnas indexadas):
         \begin{equation}
-            FB_{\text{índice}} = \left\lfloor \frac{8192}{\sum_{c \in \text{Claves}} c.\text{max\_length}} \right\rfloor
+            \text{Factor de Bloqueo}_{\text{Índice}} = \left\lfloor \frac{8192}{\text{Tamaño de la Clave}} \right\rfloor
         \end{equation}
+        Donde el \textit{Tamaño de la Clave} es la suma de las longitudes de las columnas que forman parte de dicho índice.
 \end{itemize}
 
 \subsection{R10: Costo de Consultas de Igualdad}
-Estima el costo de \texttt{WHERE columna = valor} en accesos a disco y tiempo.
+Estima el costo de ejecutar una consulta de tipo \texttt{WHERE columna = valor} en términos de accesos a páginas y tiempo.
 
 \subsubsection{1. Detección de Índices}
-Un índice es utilizable si la columna buscada es su primera clave (\texttt{key\_ordinal = 1} en \texttt{sys.index\_columns}).
+Un índice es utilizable para búsquedas directas si la columna por la que se consulta es la primera clave registrada en la estructura (\texttt{key\_ordinal = 1}).
 
-\subsubsection{2. Caso A: Full Table Scan}
-Sin índice aplicable, se leen todas las páginas:
+\subsubsection{2. Caso A: Escaneo Completo (Full Table Scan)}
+Sin un índice útil, SQL Server debe leer todas las páginas físicas de la tabla:
 \begin{equation}
-    C_{\text{scan}} = P \qquad\qquad T_{\text{scan}} = \frac{P \times 8192}{17 \times 1024^2} \text{ seg}
+    \text{Costo}_{\text{Scan}} = \text{Total de Páginas}
+\end{equation}
+\begin{equation}
+    \text{Tiempo}_{\text{Scan}} = \frac{\text{Total de Páginas} \times 8\text{ KB}}{17\text{ MB/s}}
 \end{equation}
 
-\subsubsection{3. Caso B: Index Seek}
-Con índice, se recorre el árbol B-Tree. Altura estimada con fan-out $F = 100$:
+\subsubsection{3. Caso B: Búsqueda por Índice (Index Seek)}
+Con un índice aplicable, se recorre su estructura en árbol B-Tree. La altura aproximada del árbol ($h$) se estima con un factor de ramificación (\textit{fan-out}) promedio de $100$:
 \begin{equation}
-    h = \max\left(1, \left\lceil \log_{100}(P) \right\rceil\right)
+    \text{Altura del Árbol } (h) = \max\left(1, \left\lceil \log_{100}(\text{Total de Páginas}) \right\rceil\right)
 \end{equation}
 
-Costo según tipo de índice:
+El costo se calcula dependiendo del tipo de índice detectado:
 \begin{itemize}
-    \item \textbf{Clustered}: $C_{\text{seek}} = h + 1$ (las hojas contienen los datos).
-    \item \textbf{Non-Clustered}: $C_{\text{seek}} = h + 2$ (hojas + lookup a la página de datos).
+    \item \textbf{Índice Clustered:} $\text{Costo}_{\text{Seek}} = h + 1$ (las hojas contienen directamente los datos).
+    \item \textbf{Índice Non-Clustered:} $\text{Costo}_{\text{Seek}} = h + 2$ (requiere el recorrido y luego leer la página de datos o \textit{lookup}).
 \end{itemize}
 
-Se acota para tablas pequeñas: $C_{\text{seek}} = \min(C_{\text{seek}},\; C_{\text{scan}})$.
+Para tablas con pocas páginas, se limita el costo del Seek para que no supere al de un Scan completo:
+\begin{equation}
+    \text{Costo Seek Final} = \min(\text{Costo}_{\text{Seek}},\; \text{Costo}_{\text{Scan}})
+\end{equation}
 
-El tiempo se calcula igual: $T_{\text{seek}} = \frac{C_{\text{seek}} \times 8192}{17 \times 1024^2}$ seg.
+El tiempo estimado de búsqueda física se deduce homólogamente:
+\begin{equation}
+    \text{Tiempo}_{\text{Seek}} = \frac{\text{Costo Seek Final} \times 8\text{ KB}}{17\text{ MB/s}}
+\end{equation}
 
 \newpage
 

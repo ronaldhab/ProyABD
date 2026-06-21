@@ -67,3 +67,6 @@ desktop.ini
 *.lot
 *.run.xml
 *.bcf
+
+#Logos para el informe final (no se suben al repositorio)
+*.png
