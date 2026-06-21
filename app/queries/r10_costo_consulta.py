@@ -120,10 +120,9 @@ def estimate_query_cost(table_name, column_name, conn_params=None):
                 "pk": "Sí" if index_row[3] == 1 else "No"
             }
             
-            # Estimación del costo de un Index Seek (B-Tree traversal)
+            # Estimación del costo de una Búsqueda Indexada (B-Tree traversal)
             # Para SQL Server, la altura estimada de un B-Tree se puede modelar como logaritmo
             # de las páginas de datos en base al factor de bloqueo del índice.
-            # Como aproximación práctica académica:
             # - Altura del árbol B-Tree del índice: ceil(log(P, 100)) + 1 (asumiendo fan-out promedio de 100)
             # - Si es un Clustered Index (tipo 'CLUSTERED'):
             #   Leemos los niveles del B-Tree y llegamos directo al dato.
@@ -139,7 +138,7 @@ def estimate_query_cost(table_name, column_name, conn_params=None):
                 # B-Tree del índice + 1 lookup a la tabla
                 seek_accesses = btree_height + 1 + 1
                 
-            # Asegurar que el costo con índice no sea mayor que el scan en tablas diminutas
+            # Asegurar que el costo con índice no sea mayor que el scan en tablas pequeñas
             if seek_accesses > scan_accesses:
                 seek_accesses = scan_accesses
                 
